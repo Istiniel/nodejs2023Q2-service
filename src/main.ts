@@ -10,7 +10,7 @@ const HTTP_PORT = process.env.HTTP_PORT;
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors();
-  app.setGlobalPrefix('doc/api');
+  app.setGlobalPrefix('api');
   SwaggerModule.setup('doc', app, apiConfig())
   await app.listen(HTTP_PORT);
 }

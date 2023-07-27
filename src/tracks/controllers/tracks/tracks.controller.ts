@@ -3,7 +3,7 @@ import { TracksService } from '../../services/tracks/tracks.service';
 import { CreateTrackDto } from '../../dtos/CreateTrack.dto';
 import { UpdateTrackDto } from '../../dtos/UpdateTrack.dto';
 
-@Controller('tracks')
+@Controller('track')
 export class TracksController {
 
   constructor(private trackService: TracksService) { }

@@ -3,7 +3,7 @@ import { ArtistsService } from '../../services/artists/artists.service';
 import { UpdateArtistDto } from '../../dtos/UpdateArtist.dto';
 import { CreateArtistDto } from '../../dtos/CreateArtist.dto';
 
-@Controller('artists')
+@Controller('artist')
 export class ArtistsController {
 
   constructor(private artistService: ArtistsService) { }
