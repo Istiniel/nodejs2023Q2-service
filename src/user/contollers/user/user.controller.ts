@@ -1,12 +1,12 @@
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, ParseUUIDPipe, Post, Put, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, ParseUUIDPipe, Post, Put, UsePipes, ValidationPipe } from '@nestjs/common';
 import { CreateUserDto } from '../../dtos/CreateUser.dto';
-import { UsersService } from '../../services/users/users.service';
+import { UserService } from '../../services/user/user.service';
 import UpdatePasswordDto from '../../dtos/UpdatePassword.dto';
 
 @Controller('user')
-export class UsersController {
+export class UserController {
 
-  constructor(private userService: UsersService) { }
+  constructor(private userService: UserService) { }
 
   @Get()
   getUsers() {
@@ -23,7 +23,7 @@ export class UsersController {
   getUser(@Param('id', ParseUUIDPipe) id: string) {
     const user = this.userService.getUser(id)
     if (!user) {
-      throw new HttpException('User not found', HttpStatus.BAD_REQUEST)
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND)
     }
     return user
   }
@@ -44,12 +44,15 @@ export class UsersController {
   }
 
   @Delete(':id')
+  @HttpCode(204)
   deleteUser(@Param('id', ParseUUIDPipe) id: string) {
-    const user = this.userService.deleteUser(id)
-    // if (!user) {
-    //   throw new HttpException('User not found', HttpStatus.BAD_REQUEST)
-    // }
-    return 'Success'
+    const user = this.userService.getUser(id)
+
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.BAD_REQUEST)
+    }
+
+    this.userService.deleteUser(id)
   }
 
 }

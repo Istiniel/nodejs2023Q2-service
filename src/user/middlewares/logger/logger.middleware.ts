@@ -5,7 +5,7 @@ import { NextFunction, Request, Response } from 'express';
 export class Logger implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
     const accessToken = req.headers.authorization;
-    console.log(accessToken)
+    // console.log(accessToken)
 
     if (accessToken) {
       throw new HttpException('No access', HttpStatus.FORBIDDEN)

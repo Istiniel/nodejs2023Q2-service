@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from '../../dtos/CreateUser.dto';
 import { User } from '../../../types';
-import crypto from 'crypto';
+import { v4 as uuidv4 } from 'uuid';
 import UpdatePasswordDto from '../../dtos/UpdatePassword.dto';
 
 @Injectable()
-export class UsersService {
+export class UserService {
   private fakeUsers: User[] = []
 
   fetchUsers() {
@@ -13,8 +13,9 @@ export class UsersService {
   }
 
   createUser(userData: CreateUserDto) {
-    this.fakeUsers.push({ ...userData, id: crypto.randomUUID(), version: 1, createdAt: 1, updatedAt: 1 })
-    return;
+    const id = uuidv4();
+    this.fakeUsers.push({ ...userData, id, version: 1, createdAt: 1, updatedAt: 1 })
+    return this.fakeUsers.filter(user => user.id === id)[0];
   }
 
   getUser(id: string) {
