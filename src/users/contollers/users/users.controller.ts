@@ -1,8 +1,9 @@
-import { Body, Controller, Get, HttpException, HttpStatus, Param, Post, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, ParseUUIDPipe, Post, Put, UsePipes, ValidationPipe } from '@nestjs/common';
 import { CreateUserDto } from '../../dtos/CreateUser.dto';
 import { UsersService } from '../../services/users/users.service';
+import UpdatePasswordDto from '../../dtos/UpdatePassword.dto';
 
-@Controller('users')
+@Controller('user')
 export class UsersController {
 
   constructor(private userService: UsersService) { }
@@ -19,12 +20,36 @@ export class UsersController {
   }
 
   @Get(':id')
-  getUser(@Param('id') id: string) {
-    const user = this.userService.fetchUserById(id)
-    if (!user.length) {
+  getUser(@Param('id', ParseUUIDPipe) id: string) {
+    const user = this.userService.getUser(id)
+    if (!user) {
       throw new HttpException('User not found', HttpStatus.BAD_REQUEST)
     }
     return user
+  }
+
+  @Put(':id')
+  @UsePipes(new ValidationPipe())
+  updatePassword(@Body() userData: UpdatePasswordDto, @Param('id', ParseUUIDPipe) id: string) {
+    const user = this.userService.getUser(id)
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.BAD_REQUEST)
+    }
+
+    if (user.password !== userData.oldPassword) {
+      throw new HttpException('Wrong password', HttpStatus.FORBIDDEN)
+    }
+
+    return this.userService.updatePassword(userData, id)
+  }
+
+  @Delete(':id')
+  deleteUser(@Param('id', ParseUUIDPipe) id: string) {
+    const user = this.userService.deleteUser(id)
+    // if (!user) {
+    //   throw new HttpException('User not found', HttpStatus.BAD_REQUEST)
+    // }
+    return 'Success'
   }
 
 }
