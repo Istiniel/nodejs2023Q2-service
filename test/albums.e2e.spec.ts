@@ -63,7 +63,7 @@ describe('Album (e2e)', () => {
         .send(createAlbumDto);
 
       const { id } = creationResponse.body;
-      console.log(creationResponse.body)
+
       expect(creationResponse.statusCode).toBe(StatusCodes.CREATED);
 
       const searchResponse = await unauthorizedRequest
@@ -224,7 +224,7 @@ describe('Album (e2e)', () => {
           year: '2021',
           artistId: 123,
         });
-      console.log(response.body)
+
       expect(response.status).toBe(StatusCodes.BAD_REQUEST);
     });
 
