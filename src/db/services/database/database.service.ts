@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { UpdateAlbumDto } from 'src/albums/dtos/UpdateAlbum.dto';
-import { Album, TempDatabase, Track, User } from 'src/types';
+import { UpdateArtistDto } from 'src/artists/dtos/UpdateArtist.dto';
+import { UpdateTrackDto } from 'src/tracks/dtos/UpdateTrack.dto';
+import { Album, Artist, TempDatabase, Track, User } from 'src/types';
 import UpdatePasswordDto from 'src/users/dtos/UpdatePassword.dto';
 
 @Injectable()
@@ -92,11 +94,80 @@ export class DatabaseService {
 
   createTrack(trackData: Track) {
     this.data.tracks.push(trackData)
-    return this.data.tracks.filter(track => track.id === trackData.id)[0];;
+    return this.data.tracks.filter(track => track.id === trackData.id)[0];
   }
 
   getTrack(id: string) {
     return this.data.tracks.filter(track => track.id === id)[0]
+  }
+
+  updateTrack(trackData: UpdateTrackDto, id: string) {
+    const track = this.data.tracks.filter(track => track.id === id)[0]
+
+    const newTrack: Track = { ...track, ...trackData }
+
+    this.data.tracks = this.data.tracks.map(track => {
+      if (track.id === id) {
+        return newTrack
+      }
+
+      return track
+    })
+
+    return newTrack
+  }
+
+  deleteTrack(id: string) {
+    this.data.tracks = this.data.tracks.filter(track => track.id !== id)
+  }
+
+  getArtists() {
+    return this.data.artists
+  }
+
+  createArtist(artistData: Artist) {
+    this.data.artists.push(artistData)
+    return this.data.artists.filter(artist => artist.id === artistData.id)[0];
+  }
+
+  getArtist(id: string) {
+    return this.data.artists.filter(artist => artist.id === id)[0]
+  }
+
+  updateArtist(artistData: UpdateArtistDto, id: string) {
+    const artist = this.data.artists.filter(artist => artist.id === id)[0]
+
+    const newArtist: Artist = { ...artist, ...artistData }
+
+    this.data.artists = this.data.artists.map(artist => {
+      if (artist.id === id) {
+        return newArtist
+      }
+
+      return artist
+    })
+
+    return newArtist
+  }
+
+  deleteArtist(id: string) {
+    this.data.artists = this.data.artists.filter(artist => artist.id !== id)
+
+    this.data.albums = this.data.albums.map(album => {
+      if (album.artistId === id) {
+        return { ...album, artistId: null }
+      }
+
+      return album
+    })
+
+    this.data.tracks = this.data.tracks.map(track => {
+      if (track.artistId === id) {
+        return { ...track, artistId: null }
+      }
+
+      return track
+    })
   }
 
 }

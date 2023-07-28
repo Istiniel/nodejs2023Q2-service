@@ -1,12 +1,13 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, ParseUUIDPipe, Post, Put, UsePipes, ValidationPipe } from '@nestjs/common';
-import { ArtistsService } from '../../services/artists/artists.service';
-import { UpdateArtistDto } from '../../dtos/UpdateArtist.dto';
+import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, ParseUUIDPipe, Post, Put, UsePipes, ValidationPipe } from '@nestjs/common';
 import { CreateArtistDto } from '../../dtos/CreateArtist.dto';
+import { UpdateArtistDto } from '../../dtos/UpdateArtist.dto';
+import { ArtistsService } from '../../services/artists/artists.service';
 
 @Controller('artist')
 export class ArtistsController {
 
   constructor(private artistService: ArtistsService) { }
+
 
   @Get()
   getArtists() {
@@ -16,14 +17,15 @@ export class ArtistsController {
   @Post()
   @UsePipes(new ValidationPipe())
   createArtist(@Body() artistData: CreateArtistDto) {
-    return this.artistService.createArtist(artistData)
+    const artist = this.artistService.createArtist(artistData)
+    return artist
   }
 
   @Get(':id')
   getArtist(@Param('id', ParseUUIDPipe) id: string) {
     const artist = this.artistService.getArtist(id)
     if (!artist) {
-      throw new HttpException('Artist not found', HttpStatus.NOT_FOUND)
+      throw new NotFoundException('Artist not found');
     }
     return artist
   }
@@ -33,7 +35,7 @@ export class ArtistsController {
   updateArtist(@Body() artistData: UpdateArtistDto, @Param('id', ParseUUIDPipe) id: string) {
     const artist = this.artistService.getArtist(id)
     if (!artist) {
-      throw new HttpException('Artist not found', HttpStatus.BAD_REQUEST)
+      throw new NotFoundException('Artist not found');
     }
 
     return this.artistService.updateArtist(artistData, id)
@@ -45,7 +47,7 @@ export class ArtistsController {
     const artist = this.artistService.getArtist(id)
 
     if (!artist) {
-      throw new HttpException('Artist not found', HttpStatus.BAD_REQUEST)
+      throw new NotFoundException('Artist not found');
     }
 
     this.artistService.deleteArtist(id)

@@ -17,7 +17,6 @@ export class AlbumsController {
   @UsePipes(new ValidationPipe())
   createAlbum(@Body() albumData: CreateAlbumDto) {
     const album = this.albumService.createAlbum(albumData)
-    console.log(album)
     return album
   }
 

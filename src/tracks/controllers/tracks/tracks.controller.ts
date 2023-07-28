@@ -1,7 +1,7 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, ParseUUIDPipe, Post, Put, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, ParseUUIDPipe, Post, Put, UsePipes, ValidationPipe } from '@nestjs/common';
+import { CreateTrackDto } from 'src/tracks/dtos/CreateTrack.dto';
+import { UpdateTrackDto } from 'src/tracks/dtos/UpdateTrack.dto';
 import { TracksService } from '../../services/tracks/tracks.service';
-import { CreateTrackDto } from '../../dtos/CreateTrack.dto';
-import { UpdateTrackDto } from '../../dtos/UpdateTrack.dto';
 
 @Controller('track')
 export class TracksController {
@@ -9,21 +9,22 @@ export class TracksController {
   constructor(private trackService: TracksService) { }
 
   @Get()
-  getUsers() {
+  getTracks() {
     return this.trackService.getTracks()
   }
 
   @Post()
   @UsePipes(new ValidationPipe())
-  createUser(@Body() trackData: CreateTrackDto) {
-    return this.trackService.createTrack(trackData)
+  createTrack(@Body() trackData: CreateTrackDto) {
+    const track = this.trackService.createTrack(trackData)
+    return track
   }
 
   @Get(':id')
-  getUser(@Param('id', ParseUUIDPipe) id: string) {
+  getTrack(@Param('id', ParseUUIDPipe) id: string) {
     const track = this.trackService.getTrack(id)
     if (!track) {
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND)
+      throw new NotFoundException('Track not found');
     }
     return track
   }
@@ -31,22 +32,21 @@ export class TracksController {
   @Put(':id')
   @UsePipes(new ValidationPipe())
   updateTrack(@Body() trackData: UpdateTrackDto, @Param('id', ParseUUIDPipe) id: string) {
-    const user = this.trackService.getTrack(id)
-    if (!user) {
-      throw new HttpException('Track does not exists', HttpStatus.BAD_REQUEST)
+    const track = this.trackService.getTrack(id)
+    if (!track) {
+      throw new NotFoundException('Track not found');
     }
-
 
     return this.trackService.updateTrack(trackData, id)
   }
 
   @Delete(':id')
   @HttpCode(204)
-  deleteUser(@Param('id', ParseUUIDPipe) id: string) {
+  deleteTrack(@Param('id', ParseUUIDPipe) id: string) {
     const track = this.trackService.getTrack(id)
 
     if (!track) {
-      throw new HttpException('Track does not exists', HttpStatus.BAD_REQUEST)
+      throw new NotFoundException('Track not found');
     }
 
     this.trackService.deleteTrack(id)
