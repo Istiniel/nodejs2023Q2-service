@@ -1,11 +1,11 @@
-import { request } from './lib';
 import { StatusCodes } from 'http-status-codes';
-import { albumsRoutes, artistsRoutes, tracksRoutes } from './endpoints';
 import { validate } from 'uuid';
+import { albumsRoutes, artistsRoutes, tracksRoutes } from './endpoints';
+import { request } from './lib';
 import {
   getTokenAndUserId,
-  shouldAuthorizationBeTested,
   removeTokenUser,
+  shouldAuthorizationBeTested,
 } from './utils';
 
 const createAlbumDto = {
@@ -63,7 +63,7 @@ describe('Album (e2e)', () => {
         .send(createAlbumDto);
 
       const { id } = creationResponse.body;
-
+      console.log(creationResponse.body)
       expect(creationResponse.statusCode).toBe(StatusCodes.CREATED);
 
       const searchResponse = await unauthorizedRequest
@@ -224,7 +224,7 @@ describe('Album (e2e)', () => {
           year: '2021',
           artistId: 123,
         });
-
+      console.log(response.body)
       expect(response.status).toBe(StatusCodes.BAD_REQUEST);
     });
 

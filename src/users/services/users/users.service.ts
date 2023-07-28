@@ -1,33 +1,38 @@
 import { Injectable } from '@nestjs/common';
-import { CreateUserDto } from '../../dtos/CreateUser.dto';
-import { User } from '../../../types';
+import { DatabaseService } from 'src/db/services/database/database.service';
 import { v4 as uuidv4 } from 'uuid';
+import { CreateUserDto } from '../../dtos/CreateUser.dto';
 import UpdatePasswordDto from '../../dtos/UpdatePassword.dto';
 
 @Injectable()
 export class UsersService {
-  private fakeUsers: User[] = []
 
-  fetchUsers() {
-    return this.fakeUsers
+  constructor(private dbService: DatabaseService) { }
+
+  getUsers() {
+    return this.dbService.getUsers()
   }
 
   createUser(userData: CreateUserDto) {
     const id = uuidv4();
-    this.fakeUsers.push({ ...userData, id, version: 1, createdAt: 1, updatedAt: 1 })
-    return this.fakeUsers.filter(user => user.id === id)[0];
+    const date = new Date().getTime()
+    const user = { ...userData, id, version: 1, createdAt: date, updatedAt: date };
+    this.dbService.createUser({ ...user })
+    delete user.password
+    return user
   }
 
   getUser(id: string) {
-    return this.fakeUsers.filter(user => user.id === id)[0]
+    return this.dbService.getUser(id)
   }
 
   updatePassword(userData: UpdatePasswordDto, id: string) {
-    const user = this.fakeUsers.filter(user => user.id === id)[0]
-    return { ...user, password: userData.newPassword }
+    const user = this.dbService.updatePassword({ ...userData }, id)
+    delete user.password
+    return user
   }
 
   deleteUser(id: string) {
-    this.fakeUsers = this.fakeUsers.filter(user => user.id !== id)
+    this.dbService.deleteUser(id)
   }
 }

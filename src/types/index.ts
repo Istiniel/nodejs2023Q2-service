@@ -33,3 +33,11 @@ export interface Favorites {
   albums: string[]; // favorite albums ids
   tracks: string[]; // favorite tracks ids
 }
+
+export interface TempDatabase {
+  users: User[],
+  tracks: Track[],
+  artists: Artist[],
+  albums: Album[],
+  favs: Favorites[]
+}

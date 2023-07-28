@@ -1,7 +1,7 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, ParseUUIDPipe, Post, Put, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, ForbiddenException, Get, HttpCode, NotFoundException, Param, ParseUUIDPipe, Post, Put, UsePipes, ValidationPipe } from '@nestjs/common';
 import { CreateUserDto } from '../../dtos/CreateUser.dto';
-import { UsersService } from '../../services/users/users.service';
 import UpdatePasswordDto from '../../dtos/UpdatePassword.dto';
+import { UsersService } from '../../services/users/users.service';
 
 @Controller('user')
 export class UsersController {
@@ -10,7 +10,7 @@ export class UsersController {
 
   @Get()
   getUsers() {
-    return this.userService.fetchUsers()
+    return this.userService.getUsers()
   }
 
   @Post()
@@ -23,7 +23,7 @@ export class UsersController {
   getUser(@Param('id', ParseUUIDPipe) id: string) {
     const user = this.userService.getUser(id)
     if (!user) {
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND)
+      throw new NotFoundException('User not found');
     }
     return user
   }
@@ -33,11 +33,11 @@ export class UsersController {
   updatePassword(@Body() userData: UpdatePasswordDto, @Param('id', ParseUUIDPipe) id: string) {
     const user = this.userService.getUser(id)
     if (!user) {
-      throw new HttpException('User not found', HttpStatus.BAD_REQUEST)
+      throw new NotFoundException('User not found');
     }
 
     if (user.password !== userData.oldPassword) {
-      throw new HttpException('Wrong password', HttpStatus.FORBIDDEN)
+      throw new ForbiddenException('No access')
     }
 
     return this.userService.updatePassword(userData, id)
@@ -49,7 +49,7 @@ export class UsersController {
     const user = this.userService.getUser(id)
 
     if (!user) {
-      throw new HttpException('User not found', HttpStatus.BAD_REQUEST)
+      throw new NotFoundException('User not found');
     }
 
     this.userService.deleteUser(id)

@@ -1,33 +1,35 @@
 import { Injectable } from '@nestjs/common';
+import { DatabaseService } from 'src/db/services/database/database.service';
 import { v4 as uuidv4 } from 'uuid';
-import { Album } from '../../../types';
 import { CreateAlbumDto } from '../../dtos/CreateAlbum.dto';
 import { UpdateAlbumDto } from '../../dtos/UpdateAlbum.dto';
 
 @Injectable()
 export class AlbumsService {
-  private fakeAlbums: Album[] = []
+
+  constructor(private dbService: DatabaseService) { }
 
   getAlbums() {
-    return this.fakeAlbums
+    return this.dbService.getAlbums()
   }
 
   createAlbum(albumData: CreateAlbumDto) {
     const id = uuidv4();
-    this.fakeAlbums.push({ ...albumData, id })
-    return this.fakeAlbums.filter(album => album.id === id)[0];
+    const album = { ...albumData, id };
+    this.dbService.createAlbum({ ...album })
+    return album;
   }
 
   getAlbum(id: string) {
-    return this.fakeAlbums.filter(album => album.id === id)[0]
+    return this.dbService.getAlbum(id)
   }
 
   updateAlbum(albumData: UpdateAlbumDto, id: string) {
-    const artist = this.fakeAlbums.filter(album => album.id === id)[0]
-    return { ...artist, ...albumData }
+    const album = this.dbService.updateAlbum(albumData, id)
+    return album
   }
 
   deleteAlbum(id: string) {
-    this.fakeAlbums = this.fakeAlbums.filter(album => album.id !== id)
+    this.dbService.deleteAlbum(id)
   }
 }

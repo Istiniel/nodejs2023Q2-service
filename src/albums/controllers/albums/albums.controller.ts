@@ -1,7 +1,7 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, ParseUUIDPipe, Post, Put, UsePipes, ValidationPipe } from '@nestjs/common';
-import { AlbumsService } from '../../services/albums/albums.service';
+import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, ParseUUIDPipe, Post, Put, UsePipes, ValidationPipe } from '@nestjs/common';
 import { CreateAlbumDto } from '../../dtos/CreateAlbum.dto';
 import { UpdateAlbumDto } from '../../dtos/UpdateAlbum.dto';
+import { AlbumsService } from '../../services/albums/albums.service';
 
 @Controller('album')
 export class AlbumsController {
@@ -16,14 +16,16 @@ export class AlbumsController {
   @Post()
   @UsePipes(new ValidationPipe())
   createAlbum(@Body() albumData: CreateAlbumDto) {
-    return this.albumService.createAlbum(albumData)
+    const album = this.albumService.createAlbum(albumData)
+    console.log(album)
+    return album
   }
 
   @Get(':id')
   getAlbum(@Param('id', ParseUUIDPipe) id: string) {
     const album = this.albumService.getAlbum(id)
     if (!album) {
-      throw new HttpException('Album not found', HttpStatus.NOT_FOUND)
+      throw new NotFoundException('Album not found');
     }
     return album
   }
@@ -33,7 +35,7 @@ export class AlbumsController {
   updateAlbum(@Body() albumData: UpdateAlbumDto, @Param('id', ParseUUIDPipe) id: string) {
     const album = this.albumService.getAlbum(id)
     if (!album) {
-      throw new HttpException('Album not found', HttpStatus.BAD_REQUEST)
+      throw new NotFoundException('Album not found');
     }
 
     return this.albumService.updateAlbum(albumData, id)
@@ -45,7 +47,7 @@ export class AlbumsController {
     const album = this.albumService.getAlbum(id)
 
     if (!album) {
-      throw new HttpException('Album not found', HttpStatus.BAD_REQUEST)
+      throw new NotFoundException('Album not found');
     }
 
     this.albumService.deleteAlbum(id)

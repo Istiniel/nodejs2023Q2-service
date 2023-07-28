@@ -1,25 +1,26 @@
 import { Injectable } from '@nestjs/common';
-import { Track } from '../../../types';
+import { DatabaseService } from 'src/db/services/database/database.service';
 import { v4 as uuidv4 } from 'uuid';
+import { Track } from '../../../types';
 import { CreateTrackDto } from '../../dtos/CreateTrack.dto';
 
 @Injectable()
 export class TracksService {
   private fakeTracks: Track[] = []
 
+  constructor(private dbService: DatabaseService) { }
+
   getTracks() {
-    return this.fakeTracks
+    return this.dbService.getTracks()
   }
 
   createTrack(trackData: CreateTrackDto) {
     const id = uuidv4();
-    const track = { ...trackData, id }
-    this.fakeTracks.push(track)
-    return track;
+    return this.dbService.createTrack({ ...trackData, id });
   }
 
   getTrack(id: string) {
-    return this.fakeTracks.filter(user => user.id === id)[0]
+    return this.dbService.getTrack(id)
   }
 
   updateTrack(trackData: CreateTrackDto, id: string) {
