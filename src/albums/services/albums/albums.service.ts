@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from 'src/db/services/database/database.service';
+import { FavoritesService } from 'src/favorites/services/favorites/favorites.service';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateAlbumDto } from '../../dtos/CreateAlbum.dto';
 import { UpdateAlbumDto } from '../../dtos/UpdateAlbum.dto';
@@ -7,7 +8,9 @@ import { UpdateAlbumDto } from '../../dtos/UpdateAlbum.dto';
 @Injectable()
 export class AlbumsService {
 
-  constructor(private dbService: DatabaseService) { }
+  constructor(
+    private dbService: DatabaseService,
+    private favoritesService: FavoritesService) { }
 
   getAlbums() {
     return this.dbService.getAlbums()
@@ -31,5 +34,6 @@ export class AlbumsService {
 
   deleteAlbum(id: string) {
     this.dbService.deleteAlbum(id)
+    this.favoritesService.deleteAlbum(id)
   }
 }

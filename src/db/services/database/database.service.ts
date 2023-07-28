@@ -12,7 +12,11 @@ export class DatabaseService {
     tracks: [],
     artists: [],
     albums: [],
-    favs: []
+    favs: {
+      artists: [],
+      albums: [],
+      tracks: []
+    }
   }
 
   getUsers() {
@@ -170,4 +174,64 @@ export class DatabaseService {
     })
   }
 
+  getAllFavorites() {
+    return this.data.favs
+  }
+
+  addFavoriteTrack(id: string) {
+    if (!this.data.favs.tracks.includes(id)) {
+      this.data.favs.tracks = [...this.data.favs.tracks, id]
+    }
+  }
+
+  deleteFavoriteTrack(id: string) {
+    let result = false;
+    this.data.favs.tracks = this.data.favs.tracks.filter(trackId => {
+      if (trackId === id) {
+        result = true;
+        return false
+      }
+      return true
+    })
+
+    return result
+  }
+
+  addFavoriteAlbum(id: string) {
+    if (!this.data.favs.albums.includes(id)) {
+      this.data.favs.albums = [...this.data.favs.albums, id]
+    }
+  }
+
+  deleteFavoriteAlbum(id: string) {
+    let result = false;
+    this.data.favs.albums = this.data.favs.albums.filter(albumId => {
+      if (albumId === id) {
+        result = true;
+        return false
+      }
+      return true
+    })
+
+    return result
+  }
+
+  addFavoriteArtist(id: string) {
+    if (!this.data.favs.artists.includes(id)) {
+      this.data.favs.artists = [...this.data.favs.artists, id]
+    }
+  }
+
+  deleteFavoriteArtist(id: string) {
+    let result = false;
+    this.data.favs.artists = this.data.favs.artists.filter(artistId => {
+      if (artistId === id) {
+        result = true;
+        return false
+      }
+      return true
+    })
+
+    return result
+  }
 }

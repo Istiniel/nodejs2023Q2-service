@@ -8,7 +8,6 @@ export class ArtistsController {
 
   constructor(private artistService: ArtistsService) { }
 
-
   @Get()
   getArtists() {
     return this.artistService.getArtists()
