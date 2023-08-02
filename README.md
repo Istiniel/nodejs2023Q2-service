@@ -76,3 +76,13 @@ For more information, visit: https://code.visualstudio.com/docs/editor/debugging
 ```
 docker compose up --build
 ```
+
+### Docker check for vulnerabilities
+
+```
+npm run docker-scan:app
+npm run docker-scan:db
+npm run docker-scan
+```
+
+
