@@ -18,6 +18,7 @@ export class FavoritesController {
     return this.favsService.getAllFavorites();
   }
 
+
   @Post('track/:id')
   addFavoriteTrack(@Param('id', ParseUUIDPipe) id: string) {
     const track = this.tracksService.getTrack(id)

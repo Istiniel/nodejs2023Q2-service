@@ -14,4 +14,5 @@ async function bootstrap() {
   SwaggerModule.setup('doc', app, apiConfig())
   await app.listen(HTTP_PORT);
 }
+
 bootstrap();

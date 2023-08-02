@@ -1,0 +1,36 @@
+version: '1'
+services:
+  node:
+    build: .
+    networks:
+      - backend
+    ports:
+      - ${HTTP_PORT}:${HTTP_PORT}
+    depends_on:
+      - postgres
+    env_file:
+      - .env
+    # environment:
+    #   PORT: ${DOCKER_PORT}
+    volumes:
+      - .:/usr/app/
+      - ignore:/usr/app/node_modules/
+  postgres:
+    build: ./src/db/
+    networks:
+      - backend
+    ports:
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres:/var/lib/postgresql/data
+volumes:
+  node:
+  postgres:
+  ignore:
+networks:
+  backend:
+    driver: bridge
