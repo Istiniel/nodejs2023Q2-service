@@ -1,27 +1,30 @@
-import { Body, Controller, Delete, ForbiddenException, Get, HttpCode, NotFoundException, Param, ParseUUIDPipe, Post, Put, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, Delete, ForbiddenException, Get, HttpCode, NotFoundException, Param, ParseUUIDPipe, Post, Put, UseInterceptors, UsePipes, ValidationPipe } from '@nestjs/common';
+import UpdatePasswordDto from 'src/users/dtos/UpdatePassword.dto';
+import { UsersService } from 'src/users/services/users/users.service';
 import { CreateUserDto } from '../../dtos/CreateUser.dto';
-import UpdatePasswordDto from '../../dtos/UpdatePassword.dto';
-import { UsersService } from '../../services/users/users.service';
 
 @Controller('user')
+@UseInterceptors(ClassSerializerInterceptor)
 export class UsersController {
 
   constructor(private userService: UsersService) { }
 
   @Get()
-  getUsers() {
-    return this.userService.getUsers()
+  async getUsers() {
+    const users = await this.userService.getUsers()
+    return users
   }
 
   @Post()
   @UsePipes(new ValidationPipe())
-  createUser(@Body() userData: CreateUserDto) {
-    return this.userService.createUser(userData)
+  async createUser(@Body() userData: CreateUserDto) {
+    return await this.userService.createUser(userData)
   }
 
   @Get(':id')
-  getUser(@Param('id', ParseUUIDPipe) id: string) {
-    const user = this.userService.getUser(id)
+  async getUser(@Param('id', ParseUUIDPipe) id: string) {
+    const user = (await this.userService.getUser(id))
+
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -30,8 +33,8 @@ export class UsersController {
 
   @Put(':id')
   @UsePipes(new ValidationPipe())
-  updatePassword(@Body() userData: UpdatePasswordDto, @Param('id', ParseUUIDPipe) id: string) {
-    const user = this.userService.getUser(id)
+  async updatePassword(@Body() userData: UpdatePasswordDto, @Param('id', ParseUUIDPipe) id: string) {
+    const user = await this.userService.getUser(id)
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -40,19 +43,20 @@ export class UsersController {
       throw new ForbiddenException('No access')
     }
 
-    return this.userService.updatePassword(userData, id)
+    return await this.userService.updatePassword(
+      user, userData.newPassword
+    )
   }
 
   @Delete(':id')
   @HttpCode(204)
-  deleteUser(@Param('id', ParseUUIDPipe) id: string) {
-    const user = this.userService.getUser(id)
-
+  async deleteUser(@Param('id', ParseUUIDPipe) id: string) {
+    const user = await this.userService.getUser(id)
+    console.log(user)
     if (!user) {
       throw new NotFoundException('User not found');
     }
 
-    this.userService.deleteUser(id)
+    this.userService.deleteUser(user.id)
   }
-
 }

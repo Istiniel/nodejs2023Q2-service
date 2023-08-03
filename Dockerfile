@@ -1,12 +1,14 @@
-FROM node:18-alpine3.15
+FROM node:18-alpine3.15 as build
 
-WORKDIR /usr/app
+WORKDIR /usr/app/dev
 
-COPY package*.json .
+COPY . .
 
 RUN npm install --legacy-peer-deps
 
-COPY . .
+FROM node:18-alpine3.15 as main
+WORKDIR /usr/app/dev
+COPY --from=build /usr/app/dev /usr/app/dev
 
 EXPOSE ${DOCKER_PORT}
 
