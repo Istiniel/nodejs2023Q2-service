@@ -20,7 +20,11 @@ npm install
 ## Running application
 
 ```
-npm start
+docker compose up --build
+
+npm run migration:generate ./src/db/migrations/migrationName
+
+npm run migration:run
 ```
 
 After starting the app on port (4000 as default) you can open
@@ -85,10 +89,13 @@ npm run docker-scan:db
 npm run docker-scan
 ```
 
-
 ### Docker Hub image repository (by istiniel)
-
 
 [home-library-service2023q2](https://hub.docker.com/search?q=home-library-service2023q2)
 
+### Postgres migration
 
+```
+npm run migration:generate ./src/db/migrations/migrationName
+npm run migration:run
+```

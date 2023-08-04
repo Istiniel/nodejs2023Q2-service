@@ -7,7 +7,8 @@ services:
     ports:
       - ${HTTP_PORT}:${HTTP_PORT}
     depends_on:
-      - postgres
+      postgres:
+        condition: service_started
     env_file:
       - .env
     restart: unless-stopped
@@ -35,6 +36,11 @@ services:
       POSTGRES_PORT: ${POSTGRES_PORT}
     volumes:
       - postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 10s
+      timeout: 5s
+      retries: 5
 volumes:
   node:
   postgres:

@@ -1,16 +1,12 @@
 import { Controller, Delete, Get, HttpCode, NotFoundException, Param, ParseUUIDPipe, Post, UnprocessableEntityException } from '@nestjs/common';
-import { AlbumsService } from 'src/albums/services/albums/albums.service';
 import { ArtistsService } from 'src/artists/services/artists/artists.service';
 import { FavoritesService } from 'src/favorites/services/favorites/favorites.service';
-import { TracksService } from 'src/tracks/services/tracks/tracks.service';
 
 @Controller('favs')
 export class FavoritesController {
 
   constructor(
     private favsService: FavoritesService,
-    private tracksService: TracksService,
-    private albumsService: AlbumsService,
     private artistsService: ArtistsService) { }
 
   @Get()
@@ -21,22 +17,22 @@ export class FavoritesController {
 
   @Post('track/:id')
   addFavoriteTrack(@Param('id', ParseUUIDPipe) id: string) {
-    const track = this.tracksService.getTrack(id)
+    // const track = this.tracksService.getTrack(id)
 
-    if (!track) {
-      throw new UnprocessableEntityException('Track not found');
-    }
+    // if (!track) {
+    //   throw new UnprocessableEntityException('Track not found');
+    // }
 
     this.favsService.addTrack(id)
   }
 
   @Post('album/:id')
   addFavoriteAlbum(@Param('id', ParseUUIDPipe) id: string) {
-    const album = this.albumsService.getAlbum(id)
+    // const album = this.albumsService.getAlbum(id)
 
-    if (!album) {
-      throw new UnprocessableEntityException('Album not found');
-    }
+    // if (!album) {
+    //   throw new UnprocessableEntityException('Album not found');
+    // }
 
     this.favsService.addAlbum(id)
   }

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { DatabaseService } from 'src/db/services/database/database.service';
-import { FavoritesService } from 'src/favorites/services/favorites/favorites.service';
-import { v4 as uuidv4 } from 'uuid';
+import { InjectRepository } from '@nestjs/typeorm';
+import { AlbumEntity } from 'src/albums/entities/album.entity';
+import { Repository } from 'typeorm';
 import { CreateAlbumDto } from '../../dtos/CreateAlbum.dto';
 import { UpdateAlbumDto } from '../../dtos/UpdateAlbum.dto';
 
@@ -9,31 +9,31 @@ import { UpdateAlbumDto } from '../../dtos/UpdateAlbum.dto';
 export class AlbumsService {
 
   constructor(
-    private dbService: DatabaseService,
-    private favoritesService: FavoritesService) { }
+    @InjectRepository(AlbumEntity) private albumRepository: Repository<AlbumEntity>) { }
 
-  getAlbums() {
-    return this.dbService.getAlbums()
+  async getAlbums() {
+    return await this.albumRepository.find()
   }
 
-  createAlbum(albumData: CreateAlbumDto) {
-    const id = uuidv4();
-    const album = { ...albumData, id };
-    this.dbService.createAlbum({ ...album })
-    return album;
+  async createAlbum(albumData: CreateAlbumDto) {
+    const newAlbum = this.albumRepository.create(albumData)
+    return await this.albumRepository.save(newAlbum)
   }
 
-  getAlbum(id: string) {
-    return this.dbService.getAlbum(id)
-  }
 
-  updateAlbum(albumData: UpdateAlbumDto, id: string) {
-    const album = this.dbService.updateAlbum(albumData, id)
+  async getAlbum(id: string) {
+    const album = await this.albumRepository.findOne({ where: { id } })
     return album
   }
 
-  deleteAlbum(id: string) {
-    this.dbService.deleteAlbum(id)
-    this.favoritesService.deleteAlbum(id)
+  async updateAlbum(albumData: UpdateAlbumDto, id: string) {
+    const album = await this.albumRepository.findOne({ where: { id } })
+
+    const updatedAlbum = await this.albumRepository.save({ ...album, ...albumData })
+    return updatedAlbum
+  }
+
+  async deleteAlbum(id: string) {
+    await this.albumRepository.delete(id)
   }
 }

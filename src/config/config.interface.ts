@@ -11,8 +11,4 @@ export interface MongodbConfigProps {
 
 export interface ConfigProps {
   port: number
-  // api: ApiConfigProps
-  // mongodb: {
-  //   database: MongodbConfigProps
-  // }
 }

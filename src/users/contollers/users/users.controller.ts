@@ -52,7 +52,7 @@ export class UsersController {
   @HttpCode(204)
   async deleteUser(@Param('id', ParseUUIDPipe) id: string) {
     const user = await this.userService.getUser(id)
-    console.log(user)
+
     if (!user) {
       throw new NotFoundException('User not found');
     }
