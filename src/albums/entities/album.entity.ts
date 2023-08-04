@@ -1,4 +1,5 @@
 import { ArtistEntity } from "src/artists/entities/artist.entity";
+import { FavoriteAlbumEntity } from "src/favorites/entities/favoriteAlbum.entity";
 import { TrackEntity } from "src/tracks/entities/track.entity";
 import { Album } from "src/types";
 import {
@@ -7,6 +8,7 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn
 } from "typeorm";
 
@@ -36,4 +38,8 @@ export class AlbumEntity implements Album {
   constructor(albumData: Partial<AlbumEntity>) {
     Object.assign(this, albumData);
   }
+
+  @OneToOne(() => FavoriteAlbumEntity, (favorite) => favorite.album)
+  @JoinColumn()
+  favorite: FavoriteAlbumEntity;
 }

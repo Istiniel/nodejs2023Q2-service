@@ -16,6 +16,7 @@ export class TracksService {
 
   async createTrack(trackData: CreateTrackDto) {
     const newTrack = this.trackRepository.create(trackData)
+
     return await this.trackRepository.save(newTrack)
   }
 

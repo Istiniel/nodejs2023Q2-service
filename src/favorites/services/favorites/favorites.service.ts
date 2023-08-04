@@ -1,49 +1,82 @@
 import { Injectable } from '@nestjs/common';
-import { DatabaseService } from 'src/db/services/database/database.service';
-import { Album, Artist } from 'src/types';
+import { InjectRepository } from '@nestjs/typeorm';
+import { FavoriteAlbumEntity } from 'src/favorites/entities/favoriteAlbum.entity';
+import { FavoriteArtistEntity } from 'src/favorites/entities/favoriteArtist.entity';
+import { FavoriteTrackEntity } from 'src/favorites/entities/favoriteTrack.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class FavoritesService {
 
-  constructor(private dbService: DatabaseService) { }
+  constructor(
+    @InjectRepository(FavoriteAlbumEntity) private albumRepository: Repository<FavoriteAlbumEntity>,
+    @InjectRepository(FavoriteTrackEntity) private trackRepository: Repository<FavoriteTrackEntity>,
+    @InjectRepository(FavoriteArtistEntity) private artistRepository: Repository<FavoriteArtistEntity>,
+  ) { }
 
-  getAllFavorites() {
-    const favorites = this.dbService.getAllFavorites();
-    const tracks = favorites.tracks.map(trackId => {
-      return this.dbService.getTrack(trackId)
-    })
-    const albums: Album[] = favorites.albums.map(albumId => {
-      return this.dbService.getAlbum(albumId)
-    })
-    const artists: Artist[] = favorites.artists.map(artistId => {
-      return this.dbService.getArtist(artistId)
-    })
-
+  async getAllFavorites() {
+    const tracks = (await this.trackRepository.find()).map(favorite => favorite.track);
+    const albums = (await this.albumRepository.find()).map(favorite => favorite.album);
+    const artists = (await this.artistRepository.find()).map(favorite => favorite.artist);
 
     return { tracks, albums, artists }
   }
 
-  addTrack(id: string) {
-    return this.dbService.addFavoriteTrack(id)
+  async addTrack(id: string) {
+    try {
+      const favoriteTrack = this.trackRepository.create({ id })
+      await this.trackRepository.save(favoriteTrack)
+      const track = await this.trackRepository.findOne({
+        where: { id },
+        relations: { track: true }
+      })
+
+      return track
+    } catch (error) {
+      return null
+    }
   }
 
-  deleteTrack(id: string) {
-    return this.dbService.deleteFavoriteTrack(id)
+  async deleteTrack(id: string) {
+    return await this.trackRepository.delete(id)
   }
 
-  addAlbum(id: string) {
-    return this.dbService.addFavoriteAlbum(id)
+  async addAlbum(id: string) {
+    try {
+      const favoriteAlbum = this.albumRepository.create({ id })
+      await this.albumRepository.save(favoriteAlbum)
+      const album = await this.albumRepository.findOne({
+        where: { id },
+        relations: { album: true }
+      })
+
+      return album
+    } catch (error) {
+      return null
+    }
   }
 
-  deleteAlbum(id: string) {
-    return this.dbService.deleteFavoriteAlbum(id)
+  async deleteAlbum(id: string) {
+    return await this.albumRepository.delete(id)
   }
 
-  addArtist(id: string) {
-    return this.dbService.addFavoriteArtist(id)
+  async addArtist(id: string) {
+    try {
+      const favoriteArtist = this.artistRepository.create({ id })
+      await this.artistRepository.save(favoriteArtist)
+      const artist = await this.artistRepository.findOne({
+        where: { id },
+        relations: { artist: true }
+      })
+
+      return artist
+    } catch (error) {
+      return null
+    }
   }
 
-  deleteArtist(id: string) {
-    return this.dbService.deleteFavoriteArtist(id)
+  async deleteArtist(id: string) {
+    return await this.artistRepository.delete(id)
   }
 }
+
