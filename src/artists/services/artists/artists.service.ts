@@ -1,38 +1,37 @@
 import { Injectable } from '@nestjs/common';
-import { DatabaseService } from 'src/db/services/database/database.service';
-import { FavoritesService } from 'src/favorites/services/favorites/favorites.service';
-import { v4 as uuidv4 } from 'uuid';
+import { InjectRepository } from '@nestjs/typeorm';
+import { ArtistEntity } from 'src/artists/entities/artist.entity';
+import { Repository } from 'typeorm';
 import { CreateArtistDto } from '../../dtos/CreateArtist.dto';
 import { UpdateArtistDto } from '../../dtos/UpdateArtist.dto';
 
 @Injectable()
 export class ArtistsService {
   constructor(
-    private dbService: DatabaseService,
-    private favoritesService: FavoritesService) { }
+    @InjectRepository(ArtistEntity) private artistRepository: Repository<ArtistEntity>) { }
 
-  getArtists() {
-    return this.dbService.getArtists()
+  async getArtists() {
+    return await this.artistRepository.find()
   }
 
-  createArtist(artistData: CreateArtistDto) {
-    const id = uuidv4();
-    const artist = { ...artistData, id };
-    this.dbService.createArtist({ ...artist })
-    return artist;
+  async createArtist(artistData: CreateArtistDto) {
+    const newAlbum = this.artistRepository.create(artistData)
+    return await this.artistRepository.save(newAlbum)
   }
 
-  getArtist(id: string) {
-    return this.dbService.getArtist(id)
+  async getArtist(id: string) {
+    const album = await this.artistRepository.findOne({ where: { id } })
+    return album
   }
 
-  updateArtist(artistData: UpdateArtistDto, id: string) {
-    const artist = this.dbService.updateArtist(artistData, id)
-    return artist
+  async updateArtist(artistData: UpdateArtistDto, id: string) {
+    const artist = await this.artistRepository.findOne({ where: { id } })
+
+    const updatedArtist = await this.artistRepository.save({ ...artist, ...artistData })
+    return updatedArtist
   }
 
-  deleteArtist(id: string) {
-    this.dbService.deleteArtist(id)
-    this.favoritesService.deleteArtist(id)
+  async deleteArtist(id: string) {
+    await this.artistRepository.delete(id)
   }
 }

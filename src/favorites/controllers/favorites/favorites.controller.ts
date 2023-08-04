@@ -1,13 +1,11 @@
-import { Controller, Delete, Get, HttpCode, NotFoundException, Param, ParseUUIDPipe, Post, UnprocessableEntityException } from '@nestjs/common';
-import { ArtistsService } from 'src/artists/services/artists/artists.service';
+import { Controller, Delete, Get, HttpCode, NotFoundException, Param, ParseUUIDPipe, Post } from '@nestjs/common';
 import { FavoritesService } from 'src/favorites/services/favorites/favorites.service';
 
 @Controller('favs')
 export class FavoritesController {
 
   constructor(
-    private favsService: FavoritesService,
-    private artistsService: ArtistsService) { }
+    private favsService: FavoritesService) { }
 
   @Get()
   getFavorites() {
@@ -39,13 +37,13 @@ export class FavoritesController {
 
   @Post('artist/:id')
   addFavoriteArtist(@Param('id', ParseUUIDPipe) id: string) {
-    const artist = this.artistsService.getArtist(id)
+    // const artist = this.artistsService.getArtist(id)
 
-    if (!artist) {
-      throw new UnprocessableEntityException('Artist not found');
-    }
+    // if (!artist) {
+    //   throw new UnprocessableEntityException('Artist not found');
+    // }
 
-    this.favsService.addArtist(id)
+    // this.favsService.addArtist(id)
   }
 
   @Delete('album/:id')

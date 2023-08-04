@@ -1,4 +1,5 @@
 import { AlbumEntity } from "src/albums/entities/album.entity";
+import { ArtistEntity } from "src/artists/entities/artist.entity";
 import { Track } from "src/types";
 import {
   Column,
@@ -17,19 +18,24 @@ export class TrackEntity implements Track {
   @Column()
   name: string
 
-  @Column({ type: 'uuid', nullable: true })
-  artistId: string | null;
-
+  @Column()
+  duration: number
 
   @Column({ type: 'uuid', nullable: true })
   albumId: string | null;
 
-  @ManyToOne(() => AlbumEntity, (album) => album.tracks, { onDelete: 'SET NULL' })
+  @ManyToOne(() => AlbumEntity, (album) => album.tracks,
+    { onDelete: 'SET NULL' })
   @JoinColumn({ name: 'albumId' })
   album: AlbumEntity;
 
-  @Column()
-  duration: number
+  @Column({ type: 'uuid', nullable: true })
+  artistId: string | null;
+
+  @ManyToOne(() => ArtistEntity, (artist) => artist.tracks,
+    { onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'artistId' })
+  artist: ArtistEntity;
 
   constructor(trackData: Partial<TrackEntity>) {
     Object.assign(this, trackData);
