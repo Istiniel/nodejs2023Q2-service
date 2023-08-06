@@ -15,6 +15,7 @@ export const dataSource = {
   database: configService.get('POSTGRES_DB'),
   entities: ['dist/**/*.entity.{js,ts}'],
   migrations: ['dist/**/db/migrations/*.{js,ts}'],
+  migrationsRun: true,
   // dev
   // synchronize: true,
   // autoLoadEntities: true,

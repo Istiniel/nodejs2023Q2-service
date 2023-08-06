@@ -22,11 +22,15 @@ npm install
 ```
 docker compose up --build
 
+npm run test
+```
+
+## Generate and run new migrations
+
+```
 npm run migration:generate ./src/db/migrations/migrationName
 
 npm run migration:run
-
-npm run test
 ```
 
 After starting the app on port (4000 as default) you can open
