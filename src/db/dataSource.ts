@@ -16,11 +16,11 @@ export const dataSource = {
   entities: ['dist/**/*.entity.{js,ts}'],
   migrations: ['dist/**/db/migrations/*.{js,ts}'],
   // dev
-  synchronize: true,
-  autoLoadEntities: true,
+  // synchronize: true,
+  // autoLoadEntities: true,
   // prod
-  // synchronize: false,
-  // autoLoadEntities: false,
+  synchronize: false,
+  autoLoadEntities: false,
 };
 
 export default registerAs('typeorm', () => dataSource)
