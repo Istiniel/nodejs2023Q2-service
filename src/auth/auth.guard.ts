@@ -29,7 +29,7 @@ export class AuthGuard implements CanActivate {
     const token = this.extractToken(request);
 
     if (!token) {
-      throw new UnauthorizedException('Not valid credetials');
+      throw new UnauthorizedException('Not valid credentials');
     }
 
     try {
@@ -37,7 +37,7 @@ export class AuthGuard implements CanActivate {
         secret: configService.get('JWT_SECRET_KEY'),
       });
     } catch {
-      throw new UnauthorizedException('Not valid credetials');
+      throw new UnauthorizedException('Not valid credentials');
     }
 
     return true;

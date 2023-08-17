@@ -29,7 +29,6 @@ export class UsersService {
     return user
   }
 
-
   async updatePassword(user: UserEntity, password: string) {
     await this.userRepository.save({ ...user, password })
     const updatedUser = await this.userRepository.findOne({ where: { id: user.id } })

@@ -25,7 +25,6 @@ export class UserEntity implements User {
   @Column()
   password: string
 
-
   @CreateDateColumn()
   @Transform(({ value }) => new Date(value).getTime())
   createdAt: number | Date
