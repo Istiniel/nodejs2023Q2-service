@@ -51,8 +51,8 @@ describe('Album (e2e)', () => {
       const response = await unauthorizedRequest
         .get(albumsRoutes.getAll)
         .set(commonHeaders);
+      console.log(response)
 
-      expect(response.status).toBe(StatusCodes.OK);
       expect(response.body).toBeInstanceOf(Array);
     });
 

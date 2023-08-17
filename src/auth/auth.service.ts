@@ -41,7 +41,7 @@ export class AuthService {
     const newUser = await this.usersService.createUser({ login, password })
 
     const { id: newUserId, login: newUserLogin } = newUser;
-    const { accessToken } = await this.createTokens(newUserId, newUserLogin)
+    await this.createTokens(newUserId, newUserLogin)
 
     return {
       id: newUserId,
@@ -70,7 +70,7 @@ export class AuthService {
       },
       {
         secret: configService.get('JWT_SECRET_KEY'),
-        expiresIn: '10m',
+        expiresIn: configService.get('TOKEN_EXPIRE_TIME'),
       },
     );
 
@@ -81,7 +81,7 @@ export class AuthService {
       },
       {
         secret: configService.get('JWT_SECRET_REFRESH_KEY'),
-        expiresIn: '15d',
+        expiresIn: configService.get('TOKEN_REFRESH_EXPIRE_TIME'),
       },
     )
 
