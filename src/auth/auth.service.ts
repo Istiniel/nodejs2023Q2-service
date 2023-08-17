@@ -21,8 +21,8 @@ export class AuthService {
     }
 
     const payload = {
-      sub: user.id,
-      username: user.login
+      userId: user.id,
+      login: user.login
     }
 
     // const tokens = await this.getTokens(user.id, user.username);
