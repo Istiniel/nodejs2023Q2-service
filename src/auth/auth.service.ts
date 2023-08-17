@@ -32,11 +32,11 @@ export class AuthService {
   }
 
   async signUp({ login, password }: SignUpDto) {
-    const user = await this.usersService.getUserByLogin(login);
+    // const user = await this.usersService.getUserByLogin(login);
 
-    if (user) {
-      throw new BadRequestException('Such a user already exists!');
-    }
+    // if (user) {
+    //   throw new BadRequestException('Such a user already exists!');
+    // }
 
     const newUser = await this.usersService.createUser({ login, password })
 
