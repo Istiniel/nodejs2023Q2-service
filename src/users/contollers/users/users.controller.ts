@@ -2,6 +2,7 @@ import { Body, ClassSerializerInterceptor, Controller, Delete, ForbiddenExceptio
 import UpdatePasswordDto from 'src/users/dtos/UpdatePassword.dto';
 import { UsersService } from 'src/users/services/users/users.service';
 import { CreateUserDto } from '../../dtos/CreateUser.dto';
+import * as bcrypt from 'bcrypt';
 // import { Public } from 'src/helpers/setMetadata';
 
 @Controller('user')
@@ -41,7 +42,12 @@ export class UsersController {
       throw new NotFoundException('User not found');
     }
 
-    if (user.password !== userData.oldPassword) {
+    const isPasswordValid = await bcrypt.compare(
+      userData.oldPassword,
+      user.password,
+    );
+
+    if (!isPasswordValid) {
       throw new ForbiddenException('No access')
     }
 

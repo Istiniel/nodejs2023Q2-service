@@ -1,10 +1,10 @@
-import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { SignInDto } from 'src/auth/dto/SignInDto';
 import { SignUpDto } from 'src/auth/dto/SignUpDto';
 import { UsersService } from 'src/users/services/users/users.service';
-import bcrypt from 'bcryptjs';
+import * as bcrypt from 'bcrypt';
 
 const configService = new ConfigService();
 
@@ -21,7 +21,12 @@ export class AuthService {
       throw new NotFoundException('User with such id is not found');
     }
 
-    if (password !== user.password) {
+    const isPasswordValid = await bcrypt.compare(
+      password,
+      user.password,
+    );
+
+    if (!isPasswordValid) {
       throw new ForbiddenException('Incorrect username or password');
     }
 
@@ -43,24 +48,30 @@ export class AuthService {
     const newUser = await this.usersService.createUser({ login, password })
 
     const { id: newUserId, login: newUserLogin } = newUser;
-    await this.createTokens(newUserId, newUserLogin)
+    const{refreshToken}=await this.createTokens(newUserId, newUserLogin)
 
     return {
       id: newUserId,
+      refreshToken
     };
   }
 
-  async refreshToken(login: string) {
-    const user = await this.usersService.getUserByLogin(login);
+  async refreshToken(oldRefreshToken: string) {
+    const secret = configService.get('JWT_SECRET_REFRESH_KEY');
 
-    if (user) {
-      throw new BadRequestException('Such a user already exists!');
+    type UserCredentials = {
+      userId: string,
+      login: string,
     }
 
-    const { accessToken } = await this.createTokens(user.id, user.login)
+    try {
+      const userInfo = this.jwtService.verify<UserCredentials>(oldRefreshToken, { secret });
 
-    return {
-      accessToken
+      const { refreshToken } = await this.createTokens(userInfo.userId, userInfo.login)
+
+      return { refreshToken }
+    } catch (error) {
+      throw new ForbiddenException(error.message);
     }
   }
 
