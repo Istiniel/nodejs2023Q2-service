@@ -8,6 +8,7 @@ import { configuration } from './config/configuration';
 import typeorm from './db/dataSource';
 import { TracksModule } from './tracks/tracks.module';
 import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { UsersModule } from './users/users.module';
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => (configService.get('typeorm'))
     }),
+    AuthModule,
   ],
   controllers: [],
   providers: [],

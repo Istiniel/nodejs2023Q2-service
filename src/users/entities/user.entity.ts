@@ -18,13 +18,12 @@ export class UserEntity implements User {
   @VersionColumn()
   version: number
 
-  @Column()
+  @Column({ unique: true })
   login: string
 
   @Exclude()
   @Column()
   password: string
-
 
   @CreateDateColumn()
   @Transform(({ value }) => new Date(value).getTime())
