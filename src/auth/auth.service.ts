@@ -1,9 +1,10 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { SignInDto } from 'src/auth/dto/SignInDto';
 import { SignUpDto } from 'src/auth/dto/SignUpDto';
 import { UsersService } from 'src/users/services/users/users.service';
+import bcrypt from 'bcryptjs';
 
 const configService = new ConfigService();
 
@@ -17,17 +18,18 @@ export class AuthService {
     const user = await this.usersService.getUserByLogin(login);
 
     if (!user) {
-      throw new BadRequestException('User with such id is not found');
+      throw new NotFoundException('User with such id is not found');
     }
 
     if (password !== user.password) {
-      throw new BadRequestException('Incorrect username or password');
+      throw new ForbiddenException('Incorrect username or password');
     }
 
-    const { accessToken } = await this.createTokens(user.id, user.login)
+    const { accessToken, refreshToken } = await this.createTokens(user.id, user.login)
 
     return {
       accessToken,
+      refreshToken
     };
   }
 
